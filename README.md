@@ -2,6 +2,11 @@
 
 A reproducible **Oh My Zsh** setup for Arch Linux with a managed minimal config, a custom Polar prompt theme, **zoxide** integration, and an installer/uninstaller that can bootstrap dependencies.
 
+## Preview
+
+![polarzsh preview](screenshot.png)
+
+
 ## What you get
 
 - **Oh My Zsh** managed setup
@@ -149,24 +154,5 @@ If a plugin is installed via pacman but not in those directories, it must be sou
 If another tool modifies `PROMPT` on directory changes (e.g., environment managers), ensure polarzsh is applied last by keeping prompt logic inside the theme and using a `precmd` hook there.
 
 ## License
-MIT License
 
-Copyright (c) 2026 Erik Skopp
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Choose a license for your repo (MIT/Apache-2.0/etc.) and add `LICENSE` here.
