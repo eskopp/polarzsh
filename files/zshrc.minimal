@@ -12,8 +12,6 @@ plugins=(
   systemd
   fzf
   zoxide
-  zsh-autosuggestions
-  zsh-syntax-highlighting
   history-substring-search
   polarzsh
 )
