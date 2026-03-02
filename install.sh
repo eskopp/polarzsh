@@ -44,10 +44,6 @@ ensure_omz() {
   fi
 
   info "Oh My Zsh not found at '$OMZ_DIR'. Installing unattended..."
-  # Unattended OMZ install:
-  # - RUNZSH=no  => do not start zsh automatically
-  # - CHSH=no    => do not change login shell
-  # - KEEP_ZSHRC=yes => do not overwrite existing ~/.zshrc
   RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c \
     "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
@@ -71,6 +67,32 @@ link_force() {
   local dst="$2"
   mkdir -p "$(dirname "$dst")"
   ln -snf "$src" "$dst"
+}
+
+ensure_login_shell_zsh() {
+  local zsh_path
+  zsh_path="$(command -v zsh)"
+
+  # Arch usually: /usr/bin/zsh
+  if [[ -z "$zsh_path" ]]; then
+    die "zsh is not available in PATH after install."
+  fi
+
+  # Ensure it's in /etc/shells
+  if ! grep -qx "$zsh_path" /etc/shells 2>/dev/null; then
+    die "zsh path '$zsh_path' is not listed in /etc/shells. Cannot chsh safely."
+  fi
+
+  local current_shell
+  current_shell="$(getent passwd "$USER" | cut -d: -f7 || true)"
+
+  if [[ "$current_shell" != "$zsh_path" ]]; then
+    info "Setting login shell to zsh ($zsh_path) (sudo not required, you may be prompted for your password)..."
+    chsh -s "$zsh_path"
+    info "Login shell changed. This takes effect on next login (new terminal session / re-login)."
+  else
+    info "Login shell is already zsh ($zsh_path)."
+  fi
 }
 
 main() {
@@ -105,7 +127,10 @@ THEME_LINK="$CUSTOM_DIR/themes/polarzsh.zsh-theme"
 PLUGIN_LINK="$CUSTOM_DIR/plugins/polarzsh/polarzsh.plugin.zsh"
 STATE
 
-  info "Done. Apply with: exec zsh"
+  ensure_login_shell_zsh
+
+  info "Reloading into zsh now (this replaces the current shell session)..."
+  exec zsh -l
 }
 
 main "$@"
