@@ -18,24 +18,19 @@ require_arch() {
   [[ -r /etc/arch-release ]] || die "This installer is Arch-only. /etc/arch-release not found."
 }
 
-ensure_cmd() {
-  local c="$1"
-  command -v "$c" >/dev/null 2>&1
-}
-
 ensure_packages_arch() {
   require_arch
 
-  local missing=()
-  ensure_cmd zsh  || missing+=(zsh)
-  ensure_cmd git  || missing+=(git)
-  ensure_cmd curl || missing+=(curl)
+  # What polarzsh expects on Arch
+  local pkgs=(
+    zsh git curl
+    docker docker-compose
+    zsh-autosuggestions zsh-syntax-highlighting zsh-history-substring-search
+    fzf zoxide
+  )
 
-  if (( ${#missing[@]} > 0 )); then
-    info "Missing packages: ${missing[*]}"
-    info "Installing via pacman (sudo required)..."
-    sudo pacman -Syu --needed "${missing[@]}"
-  fi
+  info "Ensuring required packages are installed (sudo required)..."
+  sudo pacman -Syu --needed "${pkgs[@]}"
 }
 
 ensure_omz() {
@@ -44,6 +39,9 @@ ensure_omz() {
   fi
 
   info "Oh My Zsh not found at '$OMZ_DIR'. Installing unattended..."
+  # - RUNZSH=no  => do not start zsh automatically
+  # - CHSH=no    => do not change login shell (we keep this manual by default)
+  # - KEEP_ZSHRC=yes => do not overwrite existing ~/.zshrc
   RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c \
     "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
@@ -67,32 +65,6 @@ link_force() {
   local dst="$2"
   mkdir -p "$(dirname "$dst")"
   ln -snf "$src" "$dst"
-}
-
-ensure_login_shell_zsh() {
-  local zsh_path
-  zsh_path="$(command -v zsh)"
-
-  # Arch usually: /usr/bin/zsh
-  if [[ -z "$zsh_path" ]]; then
-    die "zsh is not available in PATH after install."
-  fi
-
-  # Ensure it's in /etc/shells
-  if ! grep -qx "$zsh_path" /etc/shells 2>/dev/null; then
-    die "zsh path '$zsh_path' is not listed in /etc/shells. Cannot chsh safely."
-  fi
-
-  local current_shell
-  current_shell="$(getent passwd "$USER" | cut -d: -f7 || true)"
-
-  if [[ "$current_shell" != "$zsh_path" ]]; then
-    info "Setting login shell to zsh ($zsh_path) (sudo not required, you may be prompted for your password)..."
-    chsh -s "$zsh_path"
-    info "Login shell changed. This takes effect on next login (new terminal session / re-login)."
-  else
-    info "Login shell is already zsh ($zsh_path)."
-  fi
 }
 
 main() {
@@ -127,10 +99,8 @@ THEME_LINK="$CUSTOM_DIR/themes/polarzsh.zsh-theme"
 PLUGIN_LINK="$CUSTOM_DIR/plugins/polarzsh/polarzsh.plugin.zsh"
 STATE
 
-  ensure_login_shell_zsh
-
-  info "Reloading into zsh now (this replaces the current shell session)..."
-  exec zsh -l
+  info "Done. Start zsh with: exec zsh"
+  info "If you want zsh as default login shell: chsh -s /usr/bin/zsh"
 }
 
 main "$@"

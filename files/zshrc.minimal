@@ -3,7 +3,20 @@
 export ZSH="${ZSH:-$HOME/.oh-my-zsh}"
 ZSH_THEME="polarzsh"
 
-plugins=(git polarzsh)
+plugins=(
+  git
+  docker
+  docker-compose
+  sudo
+  archlinux
+  systemd
+  fzf
+  zoxide
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  history-substring-search
+  polarzsh
+)
 
 source "$ZSH/oh-my-zsh.sh"
 
