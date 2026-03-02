@@ -18,5 +18,12 @@ plugins=(
 
 source "$ZSH/oh-my-zsh.sh"
 
+# Force-load our theme last (prevents "wrong prompt on first start")
+if [[ -r "$ZSH/custom/themes/polarzsh.zsh-theme" ]]; then
+  source "$ZSH/custom/themes/polarzsh.zsh-theme"
+  # If the theme defines a prompt setter, call it once immediately
+  (( $+functions[_polar_set_prompt] )) && _polar_set_prompt
+fi
+
 # Optional local overrides (not in git)
 [[ -r "$HOME/.config/polarzsh/local.zsh" ]] && source "$HOME/.config/polarzsh/local.zsh"
