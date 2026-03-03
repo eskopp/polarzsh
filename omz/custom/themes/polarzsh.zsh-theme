@@ -13,6 +13,7 @@ _polar_git_segment() {
 }
 
 _polar_set_prompt() {
+  print -r -- ""
   # Time as HH:MM with leading zero guaranteed
   local now="%D{%H:%M}"
   local seg="$(_polar_git_segment)"
